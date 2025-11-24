@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>CV Tailor – Settings</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 16px;
+        max-width: 600px;
+      }
+      input[type="password"],
+      input[type="text"] {
+        width: 100%;
+        padding: 6px;
+        margin: 4px 0 8px;
+      }
+      label {
+        font-weight: 600;
+      }
+      button {
+        padding: 6px 12px;
+        margin-top: 4px;
+      }
+      #status {
+        margin-left: 8px;
+      }
+      .api-key-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .api-key-row input {
+        flex: 1;
+      }
+
+      .api-key-row button {
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>CV Tailor – Settings</h1>
+
+    <section>
+      <h2>API</h2>
+      <label for="api-key">API key</label>
+      <input
+        type="password"
+        id="api-key"
+        placeholder="sk-... your API key"
+        autocomplete="off"
+      />
+      <button type="button" id="toggle-api-key-visibility">Show</button>
+
+      <label for="model">Model</label>
+      <input type="text" id="model" placeholder="gpt-4.1-mini" />
+
+      <button id="save-api">Save API Settings</button>
+      <span id="status"></span>
+    </section>
+
+    <section>
+      <h2>Base CV (PDF)</h2>
+      <p>
+        Upload your CV as a PDF. The extension will send it to OpenAI using your
+        API key to extract the text and store it as the base CV for tailoring.
+      </p>
+
+      <input type="file" id="cv-file" accept="application/pdf" />
+      <br /><br />
+
+      <button id="upload-cv" disabled>Upload & Extract CV</button>
+      <span id="cv-status"></span>
+
+      <h3>Extracted CV Text (preview)</h3>
+      <div id="preview">No CV extracted yet.</div>
+    </section>
+
+    <script src="options.js"></script>
+  </body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Tailored CV</title>
+    <style>
+      /* Simple A4-like layout */
+      @page {
+        size: A4;
+        margin: 20mm;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20mm;
+      }
+
+      .cv-container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin-bottom: 0;
+      }
+
+      h2 {
+        margin-top: 24px;
+        margin-bottom: 8px;
+        border-bottom: 1px solid #000;
+        padding-bottom: 4px;
+        font-size: 16px;
+      }
+
+      .section {
+        margin-bottom: 16px;
+      }
+
+      ul {
+        margin: 4px 0 0 18px;
+        padding: 0;
+      }
+
+      .keywords span {
+        display: inline-block;
+        margin: 2px 4px 2px 0;
+      }
+
+      .badge {
+        border: 1px solid #444;
+        border-radius: 12px;
+        padding: 2px 8px;
+        font-size: 11px;
+      }
+
+      .meta {
+        font-size: 12px;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cv-container">
+      <header>
+        <h1 id="cv-name"></h1>
+        <div class="meta" id="cv-title-location"></div>
+        <div class="meta" id="cv-contact"></div>
+      </header>
+
+      <section class="section">
+        <h2>Summary</h2>
+        <div id="cv-summary"></div>
+      </section>
+
+      <section class="section">
+        <h2>Skills</h2>
+        <div id="cv-skills" class="keywords"></div>
+      </section>
+
+      <section class="section">
+        <h2>Experience</h2>
+        <div id="cv-experience"></div>
+      </section>
+
+      <section class="section">
+        <h2>Education</h2>
+        <div id="cv-education"></div>
+      </section>
+    </div>
+
+    <script src="cv.js"></script>
+  </body>
+</html>

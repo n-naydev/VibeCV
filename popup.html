@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>LinkedIn Autofill</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 10px;
+        min-width: 200px;
+      }
+      button {
+        width: 100%;
+        padding: 8px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <button id="open-options">Settings</button>
+    <button id="scrape">Get Job Data</button>
+    <button id="get-keywords">Get Keywords</button>
+    <button id="tailor-cv">Tailor CV</button>
+    <div>
+      <textarea
+        id="jobInfo"
+        style="visibility: hidden"
+        placeholder="Scraped job data will appear here..."
+      ></textarea>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>

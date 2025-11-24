@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "AutoJob",
+  "version": "1.0",
+  "description": "Autofills LinkedIn job application forms with predefined data.",
+  "permissions": ["scripting", "activeTab", "storage"],
+  "options_page": "options.html",
+  "host_permissions": ["https://www.linkedin.com/*"],
+  "action": {
+    "default_title": "Autofill LinkedIn",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.linkedin.com/jobs/*"],
+      "js": ["contentScript.js"]
+    }
+  ]
+}
