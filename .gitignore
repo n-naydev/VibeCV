@@ -1,0 +1,87 @@
+# --- Node / TypeScript / JavaScript ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.nuxt/
+.cache/
+.tmp/
+.temp/
+
+# Vite / Webpack / Parcel / etc.
+.vite/
+.rollup.cache/
+parcel-cache/
+.webpack/
+storybook-static/
+coverage/
+
+# --- TypeScript ---
+*.tsbuildinfo
+
+# --- Logs ---
+logs/
+*.log
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# --- Environment / secrets ---
+.env
+.env.*
+!.env.example
+*.local
+key.txt
+
+# --- OS / Editor cruft ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+*.swp
+*.swo
+
+# --- Testing ---
+jest.config.js.map
+coverage/
+*.lcov
+
+# --- Docker ---
+docker-data/
+*.pid
+
+# --- Misc cache ---
+*.cache
+.cache/
+.eslintcache
+.stylelintcache
+
+# --- Python (if you prototype scripts/tools) ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+.venv/
+venv/
+.env.python
+
+# --- Local tooling ---
+.envrc
+.direnv/
