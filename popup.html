@@ -2,34 +2,226 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>LinkedIn Autofill</title>
+    <title>CV Tailor</title>
     <style>
-      body {
-        font-family: sans-serif;
-        padding: 10px;
-        min-width: 200px;
+      :root {
+        --bg: #0f172a;
+        --card: #020617;
+        --card-border: #1e293b;
+        --accent: #3b82f6;
+        --accent-soft: rgba(59, 130, 246, 0.12);
+        --text-main: #e5e7eb;
+        --text-muted: #9ca3af;
+        --text-strong: #f9fafb;
+        --radius-lg: 12px;
+        --radius-pill: 999px;
+        --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.7);
       }
-      button {
-        width: 100%;
-        padding: 8px;
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 12px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+          "Segoe UI", sans-serif;
+        background: radial-gradient(circle at top left, #1d2537, #020617 50%);
+        color: var(--text-main);
+        min-width: 260px;
+      }
+
+      .popup {
+        max-width: 340px;
+      }
+
+      .card {
+        background: linear-gradient(135deg, #020617, #020617);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--card-border);
+        padding: 14px 14px 12px;
+        box-shadow: var(--shadow-soft);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          circle at top right,
+          rgba(59, 130, 246, 0.12),
+          transparent 55%
+        );
+        opacity: 0.9;
+        pointer-events: none;
+      }
+
+      .header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 6px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .title-block {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .title {
+        font-size: 0.98rem;
+        font-weight: 600;
+        color: var(--text-strong);
+        letter-spacing: 0.02em;
+      }
+
+      .subtitle {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+      }
+
+      .pill {
+        font-size: 0.65rem;
+        padding: 3px 8px;
+        border-radius: var(--radius-pill);
+        background: var(--accent-soft);
+        color: var(--accent);
+        border: 1px solid rgba(59, 130, 246, 0.5);
+      }
+
+      .body {
+        margin-top: 4px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hint {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+      }
+
+      .btn-row {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 4px;
+      }
+
+      .btn {
         border: none;
-        border-radius: 4px;
+        border-radius: var(--radius-pill);
+        font-size: 0.78rem;
+        padding: 7px 12px;
         cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: background 0.15s ease, transform 0.05s ease,
+          box-shadow 0.15s ease, opacity 0.15s ease;
+        white-space: nowrap;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.5);
+      }
+
+      .btn-primary:hover {
+        background: linear-gradient(135deg, #60a5fa, #2563eb);
+        transform: translateY(-0.5px);
+        box-shadow: 0 14px 28px rgba(37, 99, 235, 0.6);
+      }
+
+      .btn-secondary {
+        background: rgba(15, 23, 42, 0.92);
+        color: var(--text-muted);
+        border: 1px solid #1f2937;
+      }
+
+      .btn-secondary:hover {
+        background: #020617;
+        color: var(--text-main);
+      }
+
+      .footer-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        margin-top: 6px;
+      }
+
+      .status-text {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+      }
+
+      .status-text strong {
+        color: var(--accent);
+      }
+
+      .link-muted {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-decoration: none;
+      }
+
+      .link-muted:hover {
+        color: var(--accent);
       }
     </style>
   </head>
   <body>
-    <button id="open-options">Settings</button>
-    <button id="scrape">Get Job Data</button>
-    <button id="get-keywords">Get Keywords</button>
-    <button id="tailor-cv">Tailor CV</button>
-    <div>
-      <textarea
-        id="jobInfo"
-        style="visibility: hidden"
-        placeholder="Scraped job data will appear here..."
-      ></textarea>
+    <div class="popup">
+      <div class="card">
+        <div class="header-row">
+          <div class="title-block">
+            <div class="title">CV Tailor</div>
+            <div class="subtitle">Tailor your CV to this job in one click.</div>
+          </div>
+          <span class="pill">LinkedIn / Jobs</span>
+        </div>
+
+        <div class="body">
+          <p class="hint">
+            Open a job description, then generate a tailored CV as a PDF based
+            on your saved base CV.
+          </p>
+
+          <div class="btn-row">
+            <!-- Main action for your existing logic: keep the same ID used in popup.js -->
+            <button id="tailor-cv" class="btn btn-primary">
+              Tailor CV for this job
+            </button>
+
+            <!-- Secondary: open options page (if you’ve wired this in popup.js) -->
+            <button id="open-options" class="btn btn-secondary" type="button">
+              Settings &amp; Base CV
+            </button>
+          </div>
+
+          <div class="footer-row">
+            <div class="status-text">
+              <strong>Tip:</strong> Ensure API key &amp; base CV are set.
+            </div>
+            <a href="#" class="link-muted" id="open-options-link">
+              Configure
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
+
     <script src="popup.js"></script>
   </body>
 </html>

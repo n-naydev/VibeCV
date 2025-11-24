@@ -35,7 +35,9 @@ saveApiBtn.addEventListener("click", () => {
 const cvFileInput = document.getElementById("cv-file");
 const uploadCvBtn = document.getElementById("upload-cv");
 const cvStatusEl = document.getElementById("cv-status");
-const previewEl = document.getElementById("preview");
+// const previewEl = document.getElementById("basecv-input");
+const baseCvTextarea = document.getElementById("basecv-input");
+const saveBaseCvBtn = document.getElementById("save-basecv-text");
 
 let selectedCvFile = null;
 
@@ -172,7 +174,7 @@ uploadCvBtn.addEventListener("click", async () => {
     // 3) Save as baseCV in storage
     chrome.storage.local.set({ baseCV: baseCVText }, () => {
       cvStatusEl.textContent = "Extracted & saved!";
-      previewEl.textContent = baseCVText.slice(0, 5000) || "(Empty text)";
+      baseCvTextarea.value = baseCVText;
 
       setTimeout(() => (cvStatusEl.textContent = ""), 2000);
       uploadCvBtn.disabled = false;
@@ -187,6 +189,14 @@ uploadCvBtn.addEventListener("click", async () => {
 // Load existing baseCV preview on open (if any)
 chrome.storage.local.get("baseCV", ({ baseCV }) => {
   if (baseCV) {
-    previewEl.textContent = baseCV.slice(0, 5000);
+    baseCvTextarea.value = baseCV.slice(0, 5000);
   }
+});
+
+saveBaseCvBtn.addEventListener("click", () => {
+  const text = (baseCvTextarea.value || "").trim();
+  chrome.storage.local.set({ baseCV: text }, () => {
+    cvStatusEl.textContent = "Base CV text saved!";
+    setTimeout(() => (cvStatusEl.textContent = ""), 2000);
+  });
 });

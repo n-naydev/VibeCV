@@ -4,80 +4,423 @@
     <meta charset="utf-8" />
     <title>CV Tailor – Settings</title>
     <style>
-      body {
-        font-family: sans-serif;
-        margin: 16px;
-        max-width: 600px;
+      :root {
+        --bg: #0f172a;
+        --bg-elevated: #020617;
+        --card: #020617;
+        --card-border: #1e293b;
+        --accent: #3b82f6;
+        --accent-soft: rgba(59, 130, 246, 0.1);
+        --text-main: #e5e7eb;
+        --text-muted: #9ca3af;
+        --text-strong: #f9fafb;
+        --danger: #ef4444;
+        --radius-lg: 12px;
+        --radius-pill: 999px;
+        --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.7);
       }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 24px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+          "Segoe UI", sans-serif;
+        background: radial-gradient(circle at top left, #1d2537, #020617 50%);
+        color: var(--text-main);
+      }
+
+      .page {
+        max-width: 860px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        font-size: 1.7rem;
+        color: var(--text-strong);
+        margin: 0 0 8px;
+        letter-spacing: 0.02em;
+      }
+
+      .subtitle {
+        margin: 0 0 24px;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+      }
+
+      .cards-grid {
+        display: grid;
+        gap: 18px;
+      }
+
+      @media (min-width: 840px) {
+        .cards-grid {
+          grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr);
+        }
+      }
+
+      .card {
+        background: linear-gradient(135deg, #020617, #020617);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--card-border);
+        padding: 18px 18px 16px;
+        box-shadow: var(--shadow-soft);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          circle at top right,
+          rgba(59, 130, 246, 0.1),
+          transparent 55%
+        );
+        opacity: 0.8;
+        pointer-events: none;
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      .card-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-strong);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .pill {
+        font-size: 0.65rem;
+        padding: 3px 8px;
+        border-radius: var(--radius-pill);
+        background: var(--accent-soft);
+        color: var(--accent);
+        border: 1px solid rgba(59, 130, 246, 0.4);
+      }
+
+      .card-description {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        margin-bottom: 12px;
+      }
+
+      label {
+        font-size: 0.78rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        display: block;
+        margin-bottom: 4px;
+      }
+
       input[type="password"],
       input[type="text"] {
         width: 100%;
-        padding: 6px;
-        margin: 4px 0 8px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px solid #1f2933;
+        background: #020617;
+        color: var(--text-main);
+        font-size: 0.82rem;
+        outline: none;
+        transition: border 0.15s ease, box-shadow 0.15s ease,
+          background 0.15s ease;
       }
-      label {
-        font-weight: 600;
+
+      input[type="password"]:focus,
+      input[type="text"]:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.5);
+        background: #02081f;
       }
-      button {
-        padding: 6px 12px;
-        margin-top: 4px;
-      }
-      #status {
-        margin-left: 8px;
-      }
+
       .api-key-row {
         display: flex;
         gap: 8px;
         align-items: center;
+        margin-bottom: 10px;
       }
 
       .api-key-row input {
         flex: 1;
       }
 
-      .api-key-row button {
-        padding: 4px 8px;
-        font-size: 12px;
+      .btn {
+        border: none;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        padding: 7px 14px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: background 0.15s ease, transform 0.05s ease,
+          box-shadow 0.15s ease, opacity 0.15s ease;
+        white-space: nowrap;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.5);
+      }
+
+      .btn-primary:hover {
+        background: linear-gradient(135deg, #60a5fa, #2563eb);
+        transform: translateY(-0.5px);
+        box-shadow: 0 14px 28px rgba(37, 99, 235, 0.6);
+      }
+
+      .btn-secondary {
+        background: rgba(15, 23, 42, 0.9);
+        color: var(--text-muted);
+        border: 1px solid #1f2937;
+      }
+
+      .btn-secondary:hover {
+        background: #020617;
+        color: var(--text-main);
+      }
+
+      .btn-ghost {
+        background: transparent;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        color: var(--text-muted);
+        padding: 5px 10px;
+        font-size: 0.7rem;
+      }
+
+      .btn-ghost:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: rgba(15, 23, 42, 0.7);
+      }
+
+      .status,
+      .status-cv {
+        font-size: 0.75rem;
+        color: var(--accent);
+      }
+
+      .status-error {
+        color: var(--danger);
+      }
+
+      .field-group {
+        margin-bottom: 10px;
+      }
+
+      input[type="file"] {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+      }
+
+      #preview {
+        white-space: pre-wrap;
+        border-radius: 8px;
+        border: 1px solid #1f2937;
+        padding: 10px;
+        margin-top: 10px;
+        max-height: 220px;
+        overflow: auto;
+        font-size: 0.78rem;
+        background: radial-gradient(
+          circle at top left,
+          rgba(15, 23, 42, 0.85),
+          #020617
+        );
+        color: var(--text-main);
+      }
+
+      .preview-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        margin-top: 4px;
+        margin-bottom: 6px;
+      }
+
+      .preview-title {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .preview-badge {
+        font-size: 0.7rem;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid #1f2937;
+        color: var(--text-muted);
+      }
+
+      small {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+      }
+
+      .hint {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+
+      .stacked-buttons {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 6px;
       }
     </style>
   </head>
   <body>
-    <h1>CV Tailor – Settings</h1>
-
-    <section>
-      <h2>API</h2>
-      <label for="api-key">API key</label>
-      <input
-        type="password"
-        id="api-key"
-        placeholder="sk-... your API key"
-        autocomplete="off"
-      />
-      <button type="button" id="toggle-api-key-visibility">Show</button>
-
-      <label for="model">Model</label>
-      <input type="text" id="model" placeholder="gpt-4.1-mini" />
-
-      <button id="save-api">Save API Settings</button>
-      <span id="status"></span>
-    </section>
-
-    <section>
-      <h2>Base CV (PDF)</h2>
-      <p>
-        Upload your CV as a PDF. The extension will send it to OpenAI using your
-        API key to extract the text and store it as the base CV for tailoring.
+    <div class="page">
+      <h1>CV Tailor – Settings</h1>
+      <p class="subtitle">
+        Configure your OpenAI access and base CV once. The extension will use
+        this to tailor PDFs for each job you open.
       </p>
 
-      <input type="file" id="cv-file" accept="application/pdf" />
-      <br /><br />
+      <div class="cards-grid">
+        <!-- OpenAI API config -->
+        <section class="card">
+          <div class="card-header">
+            <div class="card-title">
+              OpenAI API
+              <span class="pill">Required</span>
+            </div>
+          </div>
+          <p class="card-description">
+            Your key is stored locally in Chrome storage and is only used to
+            talk directly to OpenAI from your browser.
+          </p>
 
-      <button id="upload-cv" disabled>Upload & Extract CV</button>
-      <span id="cv-status"></span>
+          <div class="field-group">
+            <label for="api-key">API key</label>
+            <div class="api-key-row">
+              <input
+                type="password"
+                id="api-key"
+                placeholder="sk-... your OpenAI key"
+                autocomplete="off"
+              />
+              <button
+                type="button"
+                id="toggle-api-key-visibility"
+                class="btn btn-ghost"
+              >
+                Show
+              </button>
+            </div>
+            <p class="hint">
+              You can create a key in your OpenAI dashboard. Keep it private.
+            </p>
+          </div>
 
-      <h3>Extracted CV Text (preview)</h3>
-      <div id="preview">No CV extracted yet.</div>
-    </section>
+          <div class="field-group">
+            <label for="model">Model</label>
+            <input type="text" id="model" placeholder="gpt-4.1-mini" />
+            <p class="hint">
+              Any GPT-4.1 / GPT-4.1-mini compatible model name will work.
+            </p>
+          </div>
+
+          <div class="stacked-buttons">
+            <button id="save-api" class="btn btn-primary">
+              Save API Settings
+            </button>
+            <span id="status" class="status"></span>
+          </div>
+        </section>
+
+        <!-- Base CV (PDF) upload -->
+
+        <section class="card">
+          <div class="card-header">
+            <div class="card-title">
+              Base CV
+              <span class="pill">Once</span>
+            </div>
+          </div>
+          <p class="card-description">
+            You can either upload a PDF CV to extract the text, or paste/edit
+            your base CV manually. This base CV is what the extension tailors
+            for each job.
+          </p>
+
+          <!-- PDF upload -->
+          <div class="field-group">
+            <label for="cv-file">Upload PDF (optional)</label>
+            <input type="file" id="cv-file" accept="application/pdf" />
+            <p class="hint">
+              Use this if you have a PDF CV and don’t want to copy-paste the
+              text.
+            </p>
+          </div>
+
+          <div class="stacked-buttons">
+            <button id="upload-cv" class="btn btn-secondary" disabled>
+              Upload &amp; Extract CV
+            </button>
+            <span id="cv-status" class="status status-cv"></span>
+          </div>
+
+          <!-- Editable base CV text -->
+          <div class="field-group" style="margin-top: 14px">
+            <label for="basecv-input">Base CV text</label>
+            <textarea
+              id="basecv-input"
+              rows="8"
+              placeholder="Paste or edit your CV text here..."
+              style="
+                width: 100%;
+                padding: 8px 10px;
+                border-radius: 8px;
+                border: 1px solid #1f2933;
+                background: #020617;
+                color: #e5e7eb;
+                font-size: 0.82rem;
+                font-family: system-ui, -apple-system, BlinkMacSystemFont,
+                  'SF Pro Text', 'Segoe UI', sans-serif;
+                resize: vertical;
+              "
+            ></textarea>
+            <p class="hint">
+              This is the source text the extension sends to OpenAI when
+              tailoring your CV.
+            </p>
+          </div>
+
+          <div class="stacked-buttons">
+            <button id="save-basecv-text" class="btn btn-primary" type="button">
+              Save base CV text
+            </button>
+          </div>
+
+          <div class="preview-header">
+            <div class="preview-title">Extracted / Saved CV Preview</div>
+            <span class="preview-badge">First chunk</span>
+          </div>
+        </section>
+      </div>
+    </div>
 
     <script src="options.js"></script>
   </body>
