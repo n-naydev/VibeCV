@@ -30,6 +30,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       tailorCvForJob(jobData, baseCV)
         .then((cvData) => {
           console.log(333, cvData);
+          chrome.runtime.sendMessage({
+            type: "TAILOR_CV_DONE",
+          });
           chrome.storage.local.set({ cvData }, () => {
             chrome.tabs.create({
               url: chrome.runtime.getURL("cv.html"),
