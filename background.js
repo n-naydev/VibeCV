@@ -1,3 +1,70 @@
+const DEFAULT_TAILOR_PROMPT = `
+You are an expert CV writer.
+
+USER'S BASE CV (to be improved and tailored):
+---
+{{BASE_CV}}
+---
+
+JOB DESCRIPTION:
+Title: {{JOB_TITLE}}
+Company: {{JOB_COMPANY}}
+Location: {{JOB_LOCATION}}
+Description:
+{{JOB_DESCRIPTION}}
+
+TASK:
+Rewrite and improve the user's CV so it is tailored to this specific job, without inventing experience.
+
+OUTPUT:
+Return ONLY valid JSON with this structure:
+
+{
+  "personal": {
+    "name": "string",
+    "title": "string",
+    "location": "string",
+    "email": "string",
+    "phone": "string"
+  },
+  "summary": ["paragraph 1", "paragraph 2"],
+  "skills": ["skill1", "skill2", "skill3"],
+  "experience": [
+    {
+      "company": "string",
+      "role": "string",
+      "location": "string",
+      "start": "YYYY-MM",
+      "end": "YYYY-MM or 'Present'",
+      "bullets": ["bullet 1", "bullet 2"]
+    }
+  ],
+  "education": [
+    {
+      "institution": "string",
+      "degree": "string",
+      "start": "YYYY",
+      "end": "YYYY"
+    }
+  ],
+  "job_target": {
+    "title": "{{JOB_TITLE}}",
+    "company": "{{JOB_COMPANY}}",
+    "location": "{{JOB_LOCATION}}"
+  }
+}
+`.trim();
+
+function getTailorPromptTemplate() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get("tailorPrompt", ({ tailorPrompt }) => {
+      const tpl =
+        (tailorPrompt && tailorPrompt.trim()) || DEFAULT_TAILOR_PROMPT;
+      resolve(tpl);
+    });
+  });
+}
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log(`000.000 ${message}`);
   if (message.type === "GET_KEYWORDS_SCRAPING_DONE") {
@@ -72,62 +139,14 @@ function withOpenAIConfig(fn) {
 
 const tailorCvForJob = withOpenAIConfig(
   async (apiKey, model, jobData, baseCV) => {
-    const prompt = `
-You are an expert CV writer.
+    const template = await getTailorPromptTemplate();
 
-USER'S BASE CV (to be improved and tailored):
----
-${baseCV}
----
-
-JOB DESCRIPTION:
-Title: ${jobData.title || ""}
-Company: ${jobData.company || ""}
-Location: ${jobData.location || ""}
-Description:
-${jobData.description || ""}
-
-TASK:
-Rewrite and improve the user's CV so it is tailored to this specific job, without inventing experience.
-
-OUTPUT:
-Return ONLY valid JSON with this structure:
-
-{
-  "personal": {
-    "name": "string",
-    "title": "string",
-    "location": "string",
-    "email": "string",
-    "phone": "string"
-  },
-  "summary": ["paragraph 1", "paragraph 2"],
-  "skills": ["skill1", "skill2", "skill3"],
-  "experience": [
-    {
-      "company": "string",
-      "role": "string",
-      "location": "string",
-      "start": "YYYY-MM",
-      "end": "YYYY-MM or "Present"",
-      "bullets": ["bullet 1", "bullet 2"]
-    }
-  ],
-  "education": [
-    {
-      "institution": "string",
-      "degree": "string",
-      "start": "YYYY",
-      "end": "YYYY"
-    }
-  ],
-  "job_target": {
-    "title": "${jobData.title || ""}",
-    "company": "${jobData.company || ""}",
-    "location": "${jobData.location || ""}"
-  }
-}
-`.trim();
+    const prompt = template
+      .replace(/{{BASE_CV}}/g, baseCV || "")
+      .replace(/{{JOB_TITLE}}/g, jobData.title || "")
+      .replace(/{{JOB_COMPANY}}/g, jobData.company || "")
+      .replace(/{{JOB_LOCATION}}/g, jobData.location || "")
+      .replace(/{{JOB_DESCRIPTION}}/g, jobData.description || "");
 
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",

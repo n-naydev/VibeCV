@@ -419,6 +419,54 @@
             <span class="preview-badge">First chunk</span>
           </div>
         </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div class="card-title">
+              Tailoring Prompt
+              <span class="pill">Advanced</span>
+            </div>
+          </div>
+          <p class="card-description">
+            Customize the instruction prompt sent to OpenAI when tailoring your
+            CV. Use placeholders like <code>{{BASE_CV}}</code>,
+            <code>{{JOB_TITLE}}</code>, <code>{{JOB_COMPANY}}</code>,
+            <code>{{JOB_LOCATION}}</code>, and <code>{{JOB_DESCRIPTION}}</code>.
+          </p>
+
+          <div class="field-group" style="margin-top: 14px">
+            <label for="prompt-input">Tailoring prompt template</label>
+            <textarea
+              id="prompt-input"
+              rows="10"
+              placeholder="Prompt template used when tailoring your CV..."
+              style="
+                width: 100%;
+                padding: 8px 10px;
+                border-radius: 8px;
+                border: 1px solid #1f2933;
+                background: #020617;
+                color: #e5e7eb;
+                font-size: 0.82rem;
+                font-family: system-ui, -apple-system, BlinkMacSystemFont,
+                  'SF Pro Text', 'Segoe UI', sans-serif;
+                resize: vertical;
+              "
+            ></textarea>
+            <p class="hint">
+              Required placeholders: <code>{{BASE_CV}}</code>,
+              <code>{{JOB_TITLE}}</code>, <code>{{JOB_COMPANY}}</code>,
+              <code>{{JOB_LOCATION}}</code>, <code>{{JOB_DESCRIPTION}}</code>.
+            </p>
+          </div>
+
+          <div class="stacked-buttons">
+            <button id="save-prompt" class="btn btn-primary" type="button">
+              Save prompt
+            </button>
+            <span id="prompt-status" class="status"></span>
+          </div>
+        </section>
       </div>
     </div>
 

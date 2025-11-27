@@ -3,6 +3,69 @@ const modelInput = document.getElementById("model");
 const saveApiBtn = document.getElementById("save-api");
 const statusEl = document.getElementById("status");
 const toggleApiKeyBtn = document.getElementById("toggle-api-key-visibility");
+// --- Tailoring prompt config ---
+
+const promptTextarea = document.getElementById("prompt-input");
+const savePromptBtn = document.getElementById("save-prompt");
+const promptStatusEl = document.getElementById("prompt-status");
+
+// Default prompt template (what you have now, but with placeholders)
+const DEFAULT_TAILOR_PROMPT = `
+You are an expert CV writer.
+
+USER'S BASE CV (to be improved and tailored):
+---
+{{BASE_CV}}
+---
+
+JOB DESCRIPTION:
+Title: {{JOB_TITLE}}
+Company: {{JOB_COMPANY}}
+Location: {{JOB_LOCATION}}
+Description:
+{{JOB_DESCRIPTION}}
+
+TASK:
+Rewrite and improve the user's CV so it is tailored to this specific job, without inventing experience.
+
+OUTPUT:
+Return ONLY valid JSON with this structure:
+
+{
+  "personal": {
+    "name": "string",
+    "title": "string",
+    "location": "string",
+    "email": "string",
+    "phone": "string"
+  },
+  "summary": ["paragraph 1", "paragraph 2"],
+  "skills": ["skill1", "skill2", "skill3"],
+  "experience": [
+    {
+      "company": "string",
+      "role": "string",
+      "location": "string",
+      "start": "YYYY-MM",
+      "end": "YYYY-MM or 'Present'",
+      "bullets": ["bullet 1", "bullet 2"]
+    }
+  ],
+  "education": [
+    {
+      "institution": "string",
+      "degree": "string",
+      "start": "YYYY",
+      "end": "YYYY"
+    }
+  ],
+  "job_target": {
+    "title": "{{JOB_TITLE}}",
+    "company": "{{JOB_COMPANY}}",
+    "location": "{{JOB_LOCATION}}"
+  }
+}
+`.trim();
 
 toggleApiKeyBtn.addEventListener("click", () => {
   const isHidden = apiKeyInput.type === "password";
@@ -200,3 +263,22 @@ saveBaseCvBtn.addEventListener("click", () => {
     setTimeout(() => (cvStatusEl.textContent = ""), 2000);
   });
 });
+
+// Load existing tailoring prompt (or default)
+chrome.storage.local.get("tailorPrompt", ({ tailorPrompt }) => {
+  if (promptTextarea) {
+    promptTextarea.value =
+      (tailorPrompt && tailorPrompt.trim()) || DEFAULT_TAILOR_PROMPT;
+  }
+});
+
+if (savePromptBtn) {
+  savePromptBtn.addEventListener("click", () => {
+    const promptText = (promptTextarea.value || "").trim();
+
+    chrome.storage.local.set({ tailorPrompt: promptText }, () => {
+      promptStatusEl.textContent = "Prompt saved!";
+      setTimeout(() => (promptStatusEl.textContent = ""), 2000);
+    });
+  });
+}
