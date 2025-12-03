@@ -303,7 +303,7 @@
         <section class="card">
           <div class="card-header">
             <div class="card-title">
-              OpenAI API
+              AI API
               <span class="pill">Required</span>
             </div>
           </div>
@@ -311,14 +311,18 @@
             Your key is stored locally in Chrome storage and is only used to
             talk directly to OpenAI from your browser.
           </p>
-
+          <div class="field-group">
+            <label for="provider">Provider</label>
+            <input type="text" id="provider" placeholder="gpt-4.1-mini" />
+            <p class="hint">OpenAI, Gemini or Claude</p>
+          </div>
           <div class="field-group">
             <label for="api-key">API key</label>
             <div class="api-key-row">
               <input
                 type="password"
                 id="api-key"
-                placeholder="sk-... your OpenAI key"
+                placeholder="your API key"
                 autocomplete="off"
               />
               <button
@@ -470,6 +474,7 @@
       </div>
     </div>
 
+    <script src="common.js"></script>
     <script src="options.js"></script>
   </body>
 </html>
