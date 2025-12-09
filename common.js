@@ -17,7 +17,7 @@ TASK:
 Rewrite and improve the user's CV so it is tailored to this specific job, without inventing experience.
 
 OUTPUT:
-Return ONLY valid JSON with this structure, do not return:
+Return ONLY valid JSON with this structure:
 
 {
   "personal": {
