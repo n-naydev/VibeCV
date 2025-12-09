@@ -55,15 +55,6 @@ Return ONLY valid JSON with this structure:
 }
 `.trim();
 
-/**
- * Sends a prompt to the specified LLM provider and returns the response text.
- * @param {string} provider - 'openai', 'gemini', or 'anthropic'.
- * @param {string} model - The specific model name (e.g., 'gpt-4o', 'gemini-2.5-flash').
- * @param {string} apiKey - The API key for the selected provider.
- * @param {string} jobText - The job ad text to be analyzed.
- * @param {string} systemInstruction - The instruction for the model (e.g., "Extract key skills").
- * @returns {Promise<string>} The generated text response.
- */
 async function getLLMResponse(
   provider,
   model,

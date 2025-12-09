@@ -75,15 +75,4 @@ tailorBtn.addEventListener("click", async () => {
     }
     chrome.tabs.sendMessage(tabs[0].id, { type: "TAILOR_CV_START" });
   });
-
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    const tab = tabs[0];
-    if (!tab) {
-      setStage("error");
-      return;
-    }
-
-    // Ask the content script to scrape the job
-    chrome.tabs.sendMessage(tab.id, { type: "TAILOR_CV_START" });
-  });
 });

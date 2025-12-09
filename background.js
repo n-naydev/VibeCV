@@ -10,52 +10,6 @@ function getTailorPromptTemplate() {
   });
 }
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === "GET_KEYWORDS_SCRAPING_DONE") {
-    const jobData = message.data;
-    callOpenAI(jobData)
-      .then((result) => {
-        console.log("OpenAI result:", result);
-        chrome.storage.local.set({ cvData: result }, () => {
-          chrome.tabs.create({
-            url: chrome.runtime.getURL("cv.html"),
-          });
-        });
-      })
-      .catch((error) => {
-        console.error("Error calling OpenAI:", error);
-      });
-
-    return true;
-  } else if (message.type === "TAILOR_CV_SCRAPING_DONE") {
-    const jobData = message.data;
-
-    chrome.storage.local.get("baseCV", ({ baseCV }) => {
-      if (!baseCV) {
-        sendResponse?.({ error: "No base CV set (text extracted from PDF)." });
-        return;
-      }
-
-      tailorCvForJob(jobData, baseCV)
-        .then((cvData) => {
-          chrome.runtime.sendMessage({
-            type: "TAILOR_CV_DONE",
-          });
-          chrome.storage.local.set({ cvData }, () => {
-            chrome.tabs.create({
-              url: chrome.runtime.getURL("cv.html"),
-            });
-          });
-          sendResponse?.({ ok: true });
-        })
-        .catch((err) => {
-          console.error(err);
-          sendResponse?.({ error: err.message });
-        });
-    });
-  }
-});
-
 function withAPIConfig(fn) {
   return (...args) =>
     new Promise((resolve, reject) => {
@@ -109,3 +63,33 @@ const tailorCvForJob = withAPIConfig(
     return parsed;
   }
 );
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "TAILOR_CV_SCRAPING_DONE") {
+    const jobData = message.data;
+
+    chrome.storage.local.get("baseCV", ({ baseCV }) => {
+      if (!baseCV) {
+        sendResponse?.({ error: "No base CV set (text extracted from PDF)." });
+        return;
+      }
+
+      tailorCvForJob(jobData, baseCV)
+        .then((cvData) => {
+          chrome.runtime.sendMessage({
+            type: "TAILOR_CV_DONE",
+          });
+          chrome.storage.local.set({ cvData }, () => {
+            chrome.tabs.create({
+              url: chrome.runtime.getURL("cv.html"),
+            });
+          });
+          sendResponse?.({ ok: true });
+        })
+        .catch((err) => {
+          console.error(err);
+          sendResponse?.({ error: err.message });
+        });
+    });
+  }
+});

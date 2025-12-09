@@ -28,8 +28,6 @@ saveApiBtn.addEventListener("click", () => {
   const apiKey = apiKeyInput.value.trim();
   const model = (modelInput.value || "gpt-4.1-mini").trim();
 
-  console.log("010101", provider, apiKey, model);
-
   chrome.storage.local.set({ provider, apiKey, model }, () => {
     statusEl.textContent = "Saved!";
     setTimeout(() => (statusEl.textContent = ""), 1500);
@@ -52,109 +50,6 @@ cvFileInput.addEventListener("change", () => {
   selectedCvFile = cvFileInput.files[0] || null;
   uploadCvBtn.disabled = !selectedCvFile;
 });
-
-// Helper: get OpenAI config from storage
-function getAPIConfig() {
-  return new Promise((resolve, reject) => {
-    chrome.storage.local.get(["provider", "apiKey", "model"], (data) => {
-      const provider = data.provider;
-      const apiKey = data.apiKey;
-      const model = data.model || "gpt-4.1-mini";
-      if (!apiKey) {
-        return reject(new Error("No API key set. Please save it above first."));
-      }
-      resolve({ provider, apiKey, model });
-    });
-  });
-}
-
-// Upload PDF file to files API
-async function uploadCvPdfToOpenAI(file, apiKey) {
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("purpose", "assistants"); // or "fine-tune" etc., but "assistants" is typical
-
-  const res = await fetch("https://api.openai.com/v1/files", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: formData,
-  });
-
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`File upload failed: ${res.status} ${errText}`);
-  }
-
-  const data = await res.json();
-  return data.id; // file_id
-}
-
-// Ask OpenAI to extract text from the uploaded PDF file
-async function extractCvTextFromFile(fileId, apiKey, model) {
-  const prompt = `
-You are a CV text extractor. The user has uploaded a CV as a PDF.
-
-TASK:
-- Read the attached file.
-- Return the full text content in a clean, plain-text format.
-- Preserve the logical structure (section headings, bullet points), but no need for exact layout.
-- Output ONLY the plain text, nothing else.
-`.trim();
-
-  const res = await fetch("https://api.openai.com/v1/responses", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model, // e.g. "gpt-4.1-mini" or "gpt-4.1"
-      input: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "input_file",
-              file_id: fileId, // this is correct for /v1/responses
-            },
-            {
-              type: "input_text",
-              text: prompt,
-            },
-          ],
-        },
-      ],
-      temperature: 0,
-    }),
-  });
-
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`OpenAI extract error: ${res.status} ${errText}`);
-  }
-
-  const data = await res.json();
-
-  // Responses API returns an `output` array
-  // Find the first text item in the output
-  let text = "";
-  const output = data.output || data.response || data; // be defensive
-
-  if (Array.isArray(output)) {
-    const firstBlock = output[0];
-    const content = firstBlock?.content;
-    if (Array.isArray(content)) {
-      const textPart = content.find(
-        (c) => c.type === "output_text" || c.type === "text"
-      );
-      text = textPart?.text || "";
-    }
-  }
-
-  return text;
-}
 
 import * as pdfjsLib from "./libs/pdf.mjs";
 
@@ -196,7 +91,6 @@ uploadCvBtn.addEventListener("click", async () => {
   uploadCvBtn.disabled = true;
 
   const baseCVText = await extractTextFromPdf(selectedCvFile);
-  console.log("Extracted Text:", baseCVText);
   chrome.storage.local.set({ baseCV: baseCVText }, () => {
     cvStatusEl.textContent = "Extracted & saved!";
     baseCvTextarea.value = baseCVText;
