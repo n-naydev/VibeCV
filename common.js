@@ -17,7 +17,7 @@ TASK:
 Rewrite and improve the user's CV so it is tailored to this specific job, without inventing experience.
 
 OUTPUT:
-Return ONLY valid JSON with this structure:
+Return ONLY valid JSON with this structure, do not return:
 
 {
   "personal": {
@@ -107,9 +107,9 @@ async function getLLMResponse(
             ],
           },
         ],
-        config: {
+        generationConfig: {
           temperature: 0.1,
-          maxOutputTokens: 1024,
+          // maxOutputTokens: 1024,
         },
       };
       break;
@@ -165,4 +165,56 @@ async function getLLMResponse(
     console.error("LLM Request Failed:", error);
     return `Error: Failed to process request for ${provider}. Details: ${error.message}`;
   }
+}
+
+function cleanAndParseJson(text) {
+  // 1. Try strict parsing first (fastest)
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    // If strict parsing fails, continue to cleaning...
+  }
+
+  // 2. Remove Markdown code blocks (```json ... ```)
+  // This regex looks for ``` (optional json), captures the content, and ignores the ending ```
+  const markdownRegex = /```(?:json)?\s*([\s\S]*?)\s*```/i;
+  const match = text.match(markdownRegex);
+
+  if (match && match[1]) {
+    try {
+      return JSON.parse(match[1]);
+    } catch (e) {
+      // Failed parsing the extraction, keep going...
+    }
+  }
+
+  // 3. "Brute Force" Search (The Nuclear Option)
+  // Find the very first '{' or '[' and the very last '}' or ']'
+  // This handles cases like: "Here is your data: { ... }"
+  const firstBrace = text.indexOf("{");
+  const lastBrace = text.lastIndexOf("}");
+
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    try {
+      const potentialJson = text.substring(firstBrace, lastBrace + 1);
+      return JSON.parse(potentialJson);
+    } catch (e) {
+      // Ignore
+    }
+  }
+
+  // 4. Handle Arrays if the object search failed
+  const firstBracket = text.indexOf("[");
+  const lastBracket = text.lastIndexOf("]");
+
+  if (firstBracket !== -1 && lastBracket !== -1 && lastBracket > firstBracket) {
+    try {
+      const potentialJson = text.substring(firstBracket, lastBracket + 1);
+      return JSON.parse(potentialJson);
+    } catch (e) {
+      // Ignore
+    }
+  }
+
+  throw new Error("Could not parse JSON from LLM response");
 }

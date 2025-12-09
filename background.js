@@ -99,7 +99,9 @@ const tailorCvForJob = withAPIConfig(
     );
     let parsed;
     try {
-      parsed = JSON.parse(Array.isArray(text) ? text[0]?.text ?? "" : text);
+      parsed = cleanAndParseJson(
+        Array.isArray(text) ? text[0]?.text ?? "" : text
+      );
     } catch (e) {
       throw new Error("Model did not return valid JSON");
     }
