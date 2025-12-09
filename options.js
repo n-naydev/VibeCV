@@ -1,4 +1,5 @@
 const apiKeyInput = document.getElementById("api-key");
+const providerInput = document.getElementById("provider");
 const modelInput = document.getElementById("model");
 const saveApiBtn = document.getElementById("save-api");
 const statusEl = document.getElementById("status");
@@ -16,20 +17,20 @@ toggleApiKeyBtn.addEventListener("click", () => {
 });
 
 // Load existing API settings
-chrome.storage.local.get(["apiKey", "model"], (data) => {
-  if (data.apiKey) apiKeyInput.value = data.apiKey;
-  if (data.model) {
-    modelInput.value = data.model;
-  } else {
-    modelInput.value = "gpt-4.1-mini";
-  }
+chrome.storage.local.get(["provider", "apiKey", "model"], (data) => {
+  providerInput.value = data.provider || "openai";
+  apiKeyInput.value = data.apiKey || "";
+  modelInput.value = data.model || "gpt-4.1-mini";
 });
 
 saveApiBtn.addEventListener("click", () => {
+  const provider = providerInput.value.trim();
   const apiKey = apiKeyInput.value.trim();
   const model = (modelInput.value || "gpt-4.1-mini").trim();
 
-  chrome.storage.local.set({ apiKey: apiKey, model: model }, () => {
+  console.log("010101", provider, apiKey, model);
+
+  chrome.storage.local.set({ provider, apiKey, model }, () => {
     statusEl.textContent = "Saved!";
     setTimeout(() => (statusEl.textContent = ""), 1500);
   });
@@ -53,15 +54,16 @@ cvFileInput.addEventListener("change", () => {
 });
 
 // Helper: get OpenAI config from storage
-function getOpenAIConfig() {
+function getAPIConfig() {
   return new Promise((resolve, reject) => {
-    chrome.storage.local.get(["apiKey", "model"], (data) => {
+    chrome.storage.local.get(["provider", "apiKey", "model"], (data) => {
+      const provider = data.provider;
       const apiKey = data.apiKey;
       const model = data.model || "gpt-4.1-mini";
       if (!apiKey) {
         return reject(new Error("No API key set. Please save it above first."));
       }
-      resolve({ apiKey, model });
+      resolve({ provider, apiKey, model });
     });
   });
 }
@@ -154,6 +156,38 @@ TASK:
   return text;
 }
 
+import * as pdfjsLib from "./libs/pdf.mjs";
+
+// 2. CRITICAL: Configure the worker.
+// This tells the library where to find the second file you downloaded.
+pdfjsLib.GlobalWorkerOptions.workerSrc = "./libs/pdf.worker.mjs";
+
+async function extractTextFromPdf(file) {
+  console.log(`📄 Processing PDF: ${file.name}`);
+
+  // 3. Read the file as an ArrayBuffer (standard browser method)
+  const arrayBuffer = await file.arrayBuffer();
+
+  // 4. Load the PDF document
+  const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+  const pdf = await loadingTask.promise;
+
+  console.log(`   PDF loaded. Pages: ${pdf.numPages}`);
+  let fullText = "";
+
+  // 5. Loop through every page and extract text
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const textContent = await page.getTextContent();
+
+    // Combine the text items
+    const pageText = textContent.items.map((item) => item.str).join(" ");
+    fullText += pageText + "\n\n";
+  }
+
+  return fullText;
+}
+
 // Handle click: upload + extract + save baseCV
 uploadCvBtn.addEventListener("click", async () => {
   if (!selectedCvFile) return;
@@ -161,34 +195,15 @@ uploadCvBtn.addEventListener("click", async () => {
   cvStatusEl.textContent = "Uploading & extracting...";
   uploadCvBtn.disabled = true;
 
-  try {
-    const { apiKey, model } = await getOpenAIConfig();
+  const baseCVText = await extractTextFromPdf(selectedCvFile);
+  console.log("Extracted Text:", baseCVText);
+  chrome.storage.local.set({ baseCV: baseCVText }, () => {
+    cvStatusEl.textContent = "Extracted & saved!";
+    baseCvTextarea.value = baseCVText;
 
-    // 1) Upload PDF file
-    const fileId = await uploadCvPdfToOpenAI(selectedCvFile, apiKey);
-
-    console.log(111, fileId);
-
-    // 2) Ask OpenAI to extract clean text
-    const baseCVText = await extractCvTextFromFile(fileId, apiKey, model);
-
-    if (!baseCVText) {
-      throw new Error("No text returned from OpenAI.");
-    }
-
-    // 3) Save as baseCV in storage
-    chrome.storage.local.set({ baseCV: baseCVText }, () => {
-      cvStatusEl.textContent = "Extracted & saved!";
-      baseCvTextarea.value = baseCVText;
-
-      setTimeout(() => (cvStatusEl.textContent = ""), 2000);
-      uploadCvBtn.disabled = false;
-    });
-  } catch (err) {
-    console.error("Error handling CV PDF:", err);
-    cvStatusEl.textContent = err.message || "Error extracting CV";
+    setTimeout(() => (cvStatusEl.textContent = ""), 2000);
     uploadCvBtn.disabled = false;
-  }
+  });
 });
 
 // Load existing baseCV preview on open (if any)

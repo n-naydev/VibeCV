@@ -294,8 +294,8 @@
     <div class="page">
       <h1>CV Tailor – Settings</h1>
       <p class="subtitle">
-        Configure your OpenAI access and base CV once. The extension will use
-        this to tailor PDFs for each job you open.
+        Configure your Provider API access and base CV once. The extension will
+        use this to tailor PDFs for each job you open.
       </p>
 
       <div class="cards-grid">
@@ -334,7 +334,7 @@
               </button>
             </div>
             <p class="hint">
-              You can create a key in your OpenAI dashboard. Keep it private.
+              You can create a key in your provider dashboard. Keep it private.
             </p>
           </div>
 
@@ -407,8 +407,8 @@
               "
             ></textarea>
             <p class="hint">
-              This is the source text the extension sends to OpenAI when
-              tailoring your CV.
+              This is the source text the extension sends to your AI provider
+              when tailoring your CV.
             </p>
           </div>
 
@@ -432,8 +432,8 @@
             </div>
           </div>
           <p class="card-description">
-            Customize the instruction prompt sent to OpenAI when tailoring your
-            CV. Use placeholders like <code>{{BASE_CV}}</code>,
+            Customize the instruction prompt sent to AI provider when tailoring
+            your CV. Use placeholders like <code>{{BASE_CV}}</code>,
             <code>{{JOB_TITLE}}</code>, <code>{{JOB_COMPANY}}</code>,
             <code>{{JOB_LOCATION}}</code>, and <code>{{JOB_DESCRIPTION}}</code>.
           </p>
@@ -475,6 +475,6 @@
     </div>
 
     <script src="common.js"></script>
-    <script src="options.js"></script>
+    <script type="module" src="options.js"></script>
   </body>
 </html>
