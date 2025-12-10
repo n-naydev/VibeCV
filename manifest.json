@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "AutoJob",
+  "name": "VibeCV",
   "version": "1.0",
-  "description": "Autofills LinkedIn job application forms with predefined data.",
+  "description": "Tailors your CV for a specific job.",
   "permissions": ["scripting", "activeTab", "storage"],
   "options_page": "options.html",
   "host_permissions": ["https://www.linkedin.com/*"],

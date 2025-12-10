@@ -37,18 +37,21 @@ saveApiBtn.addEventListener("click", () => {
 // --- Base CV (PDF) upload section ---
 
 const cvFileInput = document.getElementById("cv-file");
-const uploadCvBtn = document.getElementById("upload-cv");
 const cvStatusEl = document.getElementById("cv-status");
-// const previewEl = document.getElementById("basecv-input");
 const baseCvTextarea = document.getElementById("basecv-input");
 const saveBaseCvBtn = document.getElementById("save-basecv-text");
 
 let selectedCvFile = null;
 
-// Enable button when a file is chosen
-cvFileInput.addEventListener("change", () => {
+cvFileInput.addEventListener("change", async () => {
   selectedCvFile = cvFileInput.files[0] || null;
-  uploadCvBtn.disabled = !selectedCvFile;
+  const baseCVText = await extractTextFromPdf(selectedCvFile);
+  chrome.storage.local.set({ baseCV: baseCVText }, () => {
+    cvStatusEl.textContent = "Extracted & saved!";
+    baseCvTextarea.value = baseCVText;
+
+    setTimeout(() => (cvStatusEl.textContent = ""), 2000);
+  });
 });
 
 import * as pdfjsLib from "./libs/pdf.mjs";
@@ -82,23 +85,6 @@ async function extractTextFromPdf(file) {
 
   return fullText;
 }
-
-// Handle click: upload + extract + save baseCV
-uploadCvBtn.addEventListener("click", async () => {
-  if (!selectedCvFile) return;
-
-  cvStatusEl.textContent = "Uploading & extracting...";
-  uploadCvBtn.disabled = true;
-
-  const baseCVText = await extractTextFromPdf(selectedCvFile);
-  chrome.storage.local.set({ baseCV: baseCVText }, () => {
-    cvStatusEl.textContent = "Extracted & saved!";
-    baseCvTextarea.value = baseCVText;
-
-    setTimeout(() => (cvStatusEl.textContent = ""), 2000);
-    uploadCvBtn.disabled = false;
-  });
-});
 
 // Load existing baseCV preview on open (if any)
 chrome.storage.local.get("baseCV", ({ baseCV }) => {
