@@ -58,9 +58,148 @@
         font-size: 12px;
         color: #555;
       }
+
+      /* Editor Styles */
+      .no-print {
+        display: block;
+      }
+      
+      .toolbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: #333;
+        color: white;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 1000;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      }
+
+      .toolbar button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      
+      .toolbar button:hover {
+        background: #0056b3;
+      }
+
+      body {
+        padding-top: 60px; /* Space for toolbar */
+      }
+
+      [contenteditable] {
+        outline: none;
+        transition: background 0.2s;
+      }
+      [contenteditable]:hover {
+        background: rgba(0, 0, 0, 0.03);
+        border-radius: 2px;
+      }
+      [contenteditable]:focus {
+        background: rgba(0, 123, 255, 0.1);
+        box-shadow: 0 0 0 2px rgba(0,123,255,0.5);
+      }
+
+      .editable-item {
+        position: relative;
+        transition: background 0.2s;
+      }
+      .editable-item:hover {
+        background: rgba(0,0,0,0.01);
+      }
+
+      .controls {
+        display: none;
+        position: absolute;
+        right: 100%;
+        top: 0;
+        margin-right: 8px;
+        white-space: nowrap;
+      }
+      
+      .editable-item:hover > .controls {
+        display: flex;
+        gap: 2px;
+      }
+
+      .btn-icon {
+        background: #fff;
+        border: 1px solid #ccc;
+        cursor: pointer;
+        padding: 2px 6px;
+        font-size: 12px;
+        border-radius: 3px;
+        color: #555;
+      }
+      .btn-icon:hover {
+        background: #eee;
+        color: #000;
+      }
+      .btn-icon.delete:hover {
+        background: #fee;
+        color: #d00;
+        border-color: #faa;
+      }
+
+      .btn-add {
+        display: block;
+        width: 100%;
+        padding: 6px;
+        margin-top: 8px;
+        background: #f9f9f9;
+        border: 1px dashed #ccc;
+        color: #888;
+        text-align: center;
+        cursor: pointer;
+        font-size: 12px;
+        border-radius: 4px;
+      }
+      .btn-add:hover {
+        background: #f0f0f0;
+        border-color: #bbb;
+        color: #555;
+      }
+      
+      /* Specific tweaks for layout with controls */
+      ul li.editable-item {
+        margin-bottom: 4px;
+      }
+
+      @media print {
+        .no-print, .toolbar, .controls, .btn-add {
+          display: none !important;
+        }
+        body {
+          padding-top: 0;
+          padding: 0;
+        }
+        .cv-container {
+          width: 100%;
+          max-width: none;
+        }
+        [contenteditable]:hover, [contenteditable]:focus {
+          background: none !important;
+          box-shadow: none !important;
+        }
+      }
     </style>
   </head>
   <body>
+    <div class="toolbar no-print">
+      <span><strong>VibeCV Editor</strong></span>
+      <button id="btn-print">Print / Save as PDF</button>
+    </div>
+
     <div class="cv-container">
       <header>
         <h1 id="cv-name"></h1>

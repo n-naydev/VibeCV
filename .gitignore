@@ -85,3 +85,8 @@ venv/
 # --- Local tooling ---
 .envrc
 .direnv/
+
+# Local utility scripts and tests
+extract_pdf_local.mjs
+test_file_upload.mjs
+test_pdfjs.mjs
