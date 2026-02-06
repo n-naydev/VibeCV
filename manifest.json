@@ -5,7 +5,6 @@
   "description": "Tailors your CV for a specific job.",
   "permissions": ["scripting", "activeTab", "storage"],
   "options_page": "options.html",
-  "host_permissions": ["https://www.linkedin.com/*"],
   "action": {
     "default_title": "Autofill LinkedIn",
     "default_popup": "popup.html",
