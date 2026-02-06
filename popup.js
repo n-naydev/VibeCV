@@ -1,9 +1,14 @@
 const tailorBtn = document.getElementById("tailor-cv");
 const openOptionsBtn = document.getElementById("open-options");
+const openOptionsLink = document.getElementById("open-options-link");
 const stageStatusEl = document.getElementById("stage-status");
 
-openOptionsBtn.addEventListener("click", () => {
-  chrome.runtime.openOptionsPage();
+[openOptionsBtn, openOptionsLink].forEach((btn) => {
+  if (btn) {
+    btn.addEventListener("click", () => {
+      chrome.runtime.openOptionsPage();
+    });
+  }
 });
 
 chrome.runtime.onMessage.addListener((message) => {
