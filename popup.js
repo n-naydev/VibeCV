@@ -66,7 +66,31 @@ function setStage(stage) {
 }
 
 // initial
-setStage("idle");
+function checkConfiguration() {
+  chrome.storage.local.get(["apiKey", "baseCV"], ({ apiKey, baseCV }) => {
+    const isConfigured = !!(apiKey && baseCV);
+
+    if (!isConfigured) {
+      // Not configured
+      if (tailorBtn) tailorBtn.style.display = "none";
+      if (openOptionsBtn) openOptionsBtn.style.display = "inline-flex";
+
+      if (stageStatusEl) {
+        stageStatusEl.textContent = "Please configure API Key and Base CV first.";
+        stageStatusEl.style.color = "#ef4444"; // Warning color
+      }
+    } else {
+      // Configured
+      if (tailorBtn) tailorBtn.style.display = "inline-flex";
+      if (openOptionsBtn) openOptionsBtn.style.display = "none";
+      
+      if (stageStatusEl) stageStatusEl.style.color = ""; // Reset color
+      setStage("idle");
+    }
+  });
+}
+
+checkConfiguration();
 
 // Main button: start flow
 tailorBtn.addEventListener("click", async () => {
