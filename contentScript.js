@@ -156,15 +156,18 @@ function showVibeCvModal(targetInput) {
             <style>
                .vibe-cv-pdf-wrap { font-family: Arial, sans-serif; padding: 20mm; background: white; margin: 0; color: #000; box-sizing: border-box; }
                .vibe-cv-pdf-wrap .cv-container { max-width: 800px; margin: 0 auto; }
-               .vibe-cv-pdf-wrap h1 { margin-bottom: 0; font-size: 24px; color: #000; font-weight: bold; }
-               .vibe-cv-pdf-wrap h2 { margin-top: 24px; margin-bottom: 8px; border-bottom: 1px solid #000; padding-bottom: 4px; font-size: 16px; color: #000; font-weight: bold; }
-               .vibe-cv-pdf-wrap .section { margin-bottom: 16px; }
+               .vibe-cv-pdf-wrap h1 { margin-bottom: 0; font-size: 24px; color: #000; font-weight: bold; page-break-after: avoid; }
+               .vibe-cv-pdf-wrap h2 { margin-top: 24px; margin-bottom: 8px; border-bottom: 1px solid #000; padding-bottom: 4px; font-size: 16px; color: #000; font-weight: bold; page-break-after: avoid; }
+               .vibe-cv-pdf-wrap .section { margin-bottom: 16px; page-break-inside: auto; }
                .vibe-cv-pdf-wrap ul { margin: 4px 0 0 18px; padding: 0; }
-               .vibe-cv-pdf-wrap li { margin-bottom: 4px; }
+               .vibe-cv-pdf-wrap li { margin-bottom: 4px; page-break-inside: avoid; }
+               .vibe-cv-pdf-wrap p { page-break-inside: avoid; }
+               .vibe-cv-pdf-wrap .keywords { page-break-inside: avoid; }
                .vibe-cv-pdf-wrap .keywords span { display: inline-block; margin: 2px 4px 2px 0; border: 1px solid #444; border-radius: 12px; padding: 2px 8px; font-size: 11px; }
-               .vibe-cv-pdf-wrap .meta { font-size: 12px; color: #555; }
-               .vibe-cv-pdf-wrap .exp-item { margin-bottom: 12px; }
-               .vibe-cv-pdf-wrap .exp-header { font-weight: bold; }
+               .vibe-cv-pdf-wrap .meta { font-size: 12px; color: #555; page-break-inside: avoid; }
+               .vibe-cv-pdf-wrap .exp-item { margin-bottom: 12px; page-break-inside: avoid; }
+               .vibe-cv-pdf-wrap .exp-header { font-weight: bold; page-break-after: avoid; }
+               .vibe-cv-pdf-wrap .edu-item { margin-bottom: 6px; page-break-inside: avoid; }
             </style>
             <div class="vibe-cv-pdf-wrap" id="vibe-cv-pdf-content">
                <div class="cv-container">
@@ -203,7 +206,7 @@ function showVibeCvModal(targetInput) {
              html += `<section class="section"><h2>Education</h2>`;
              cv.education.forEach(edu => {
                 const header = [edu.degree, edu.institution, [edu.start, edu.end].filter(Boolean).join(" – ")].filter(Boolean).join(" · ");
-                html += `<div style="margin-bottom:6px;">${header}</div>`;
+                html += `<div class="edu-item">${header}</div>`;
              });
              html += `</section>`;
           }
@@ -220,7 +223,8 @@ function showVibeCvModal(targetInput) {
             filename:     `CV_${cleanCompany}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true, logging: false },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: ['css', 'legacy'] }
           };
 
           html2pdf().from(element).set(opt).output('blob').then((blob) => {
