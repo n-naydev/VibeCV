@@ -154,8 +154,8 @@ function showVibeCvModal(targetInput) {
           
           let html = `
             <style>
-               .vibe-cv-pdf-wrap { font-family: Arial, sans-serif; padding: 20mm; background: white; margin: 0; color: #000; box-sizing: border-box; }
-               .vibe-cv-pdf-wrap .cv-container { max-width: 800px; margin: 0 auto; }
+               .vibe-cv-pdf-wrap { font-family: Arial, sans-serif; background: white; margin: 0; color: #000; box-sizing: border-box; width: 170mm; }
+               .vibe-cv-pdf-wrap .cv-container { width: 100%; }
                .vibe-cv-pdf-wrap h1 { margin-bottom: 0; font-size: 24px; color: #000; font-weight: bold; page-break-after: avoid; }
                .vibe-cv-pdf-wrap h2 { margin-top: 24px; margin-bottom: 8px; border-bottom: 1px solid #000; padding-bottom: 4px; font-size: 16px; color: #000; font-weight: bold; page-break-after: avoid; }
                .vibe-cv-pdf-wrap .section { margin-bottom: 16px; page-break-inside: auto; }
@@ -219,7 +219,7 @@ function showVibeCvModal(targetInput) {
           const cleanCompany = company.replace(/[^a-zA-Z0-9]/g, '_') || 'Company';
           
           const opt = {
-            margin:       0,
+            margin:       [20, 20], // top/bottom, left/right margins (20mm)
             filename:     `CV_${cleanCompany}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true, logging: false },
