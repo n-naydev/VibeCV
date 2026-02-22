@@ -1,5 +1,5 @@
 function scrapeJobData() {
-  // 1. Check the current hostname for LinkedIn
+  const url = window.location.href;
   const isLinkedIn = window.location.hostname.includes("linkedin.com");
 
   if (isLinkedIn) {
@@ -10,12 +10,18 @@ function scrapeJobData() {
     const company =
       document.querySelector(".job-details-jobs-unified-top-card__company-name")
         ?.innerText || "";
+    
+    const location =
+      document.querySelector(".job-details-jobs-unified-top-card__bullet")
+        ?.innerText || "";
+        
     const description =
       document.querySelector(".jobs-description-content")?.innerText || "";
 
-    return { jobTitle, company, location, description };
+    return { jobTitle, company, location, description, url };
   } else {
     // --- GENERIC READABILITY LOGIC (For all other sites) ---
+    let description = "";
 
     // 1. Clone the current document
     const documentClone = document.cloneNode(true);
@@ -33,7 +39,7 @@ function scrapeJobData() {
       description = safeFallback.innerText;
       console.warn("Readability failed. Using semantic element fallback.");
     }
-    return { description };
+    return { description, url };
   }
 }
 

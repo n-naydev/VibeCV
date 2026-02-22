@@ -76,20 +76,36 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
       tailorCvForJob(jobData, baseCV)
         .then((cvData) => {
-          chrome.runtime.sendMessage({
-            type: "TAILOR_CV_DONE",
-          });
-          chrome.storage.local.set({ cvData }, () => {
-            chrome.tabs.create({
-              url: chrome.runtime.getURL("cv.html"),
+          chrome.storage.local.get({ cvHistory: [] }, (res) => {
+            const history = res.cvHistory;
+            const newEntry = {
+              id: Date.now().toString(),
+              url: jobData.url || "",
+              jobTitle: jobData.jobTitle || "Unknown Title",
+              company: jobData.company || "Unknown Company",
+              cvData: cvData,
+              date: new Date().toISOString()
+            };
+            history.push(newEntry);
+
+            chrome.storage.local.set({ cvData, cvHistory: history }, () => {
+              chrome.runtime.sendMessage({
+                type: "TAILOR_CV_DONE",
+              });
+              chrome.tabs.create({
+                url: chrome.runtime.getURL("cv.html"),
+              });
+              sendResponse?.({ ok: true });
             });
           });
-          sendResponse?.({ ok: true });
         })
         .catch((err) => {
           console.error(err);
           sendResponse?.({ error: err.message });
         });
     });
+
+    // Keep the message channel open for the async sendResponse
+    return true;
   }
 });
