@@ -284,6 +284,8 @@ function renderCV(cvData) {
       end: "YYYY",
     })
   );
+
+  document.dispatchEvent(new Event("cv-rendered"));
 }
 
 const urlParams = new URLSearchParams(window.location.search);

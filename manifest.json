@@ -3,8 +3,14 @@
   "name": "VibeCV",
   "version": "1.0",
   "description": "Tailors your CV for a specific job.",
-  "permissions": ["scripting", "activeTab", "storage"],
+  "permissions": ["scripting", "activeTab", "storage", "offscreen"],
   "options_page": "options.html",
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*"],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "action": {
     "default_title": "VibeCV",
     "default_popup": "popup.html",
