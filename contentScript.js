@@ -141,38 +141,107 @@ function showVibeCvModal(targetInput) {
         card.innerHTML = `<div style="text-align:center; color: #3b82f6; font-size: 12px;">Generating PDF... Please wait.</div>`;
         card.style.pointerEvents = 'none';
         
-        // Request PDF generation
-        chrome.runtime.sendMessage({ type: 'GENERATE_PDF', cvId: item.id }, (response) => {
-          if (response && response.dataUri) {
-            // Convert dataURI to File
-            const byteString = atob(response.dataUri.split(',')[1]);
-            const mimeString = response.dataUri.split(',')[0].split(':')[1].split(';')[0];
-            const ab = new ArrayBuffer(byteString.length);
-            const ia = new Uint8Array(ab);
-            for (let i = 0; i < byteString.length; i++) {
-                ia[i] = byteString.charCodeAt(i);
-            }
-            const blob = new Blob([ab], {type: mimeString});
-            
-            // Clean filename
-            const cleanCompany = company.replace(/[^a-zA-Z0-9]/g, '_') || 'Company';
-            const file = new File([blob], `CV_${cleanCompany}.pdf`, {type: "application/pdf"});
+        try {
+          // 1. Create hidden wrapper container
+          const container = document.createElement('div');
+          container.style.cssText = "position: absolute; left: -9999px; top: 0; width: 800px; background: white; color: black; text-align: left; z-index: -1000;";
+          
+          // 2. Build the CV HTML using the same structure as cv.html
+          const cv = item.cvData;
+          const p = cv.personal || {};
+          const metaLine1 = [p.title, p.location].filter(Boolean).join(" · ");
+          const metaLine2 = [p.email, p.phone].filter(Boolean).join(" · ");
+          
+          let html = `
+            <style>
+               .vibe-cv-pdf-wrap { font-family: Arial, sans-serif; padding: 20mm; background: white; margin: 0; color: #000; box-sizing: border-box; }
+               .vibe-cv-pdf-wrap .cv-container { max-width: 800px; margin: 0 auto; }
+               .vibe-cv-pdf-wrap h1 { margin-bottom: 0; font-size: 24px; color: #000; font-weight: bold; }
+               .vibe-cv-pdf-wrap h2 { margin-top: 24px; margin-bottom: 8px; border-bottom: 1px solid #000; padding-bottom: 4px; font-size: 16px; color: #000; font-weight: bold; }
+               .vibe-cv-pdf-wrap .section { margin-bottom: 16px; }
+               .vibe-cv-pdf-wrap ul { margin: 4px 0 0 18px; padding: 0; }
+               .vibe-cv-pdf-wrap li { margin-bottom: 4px; }
+               .vibe-cv-pdf-wrap .keywords span { display: inline-block; margin: 2px 4px 2px 0; border: 1px solid #444; border-radius: 12px; padding: 2px 8px; font-size: 11px; }
+               .vibe-cv-pdf-wrap .meta { font-size: 12px; color: #555; }
+               .vibe-cv-pdf-wrap .exp-item { margin-bottom: 12px; }
+               .vibe-cv-pdf-wrap .exp-header { font-weight: bold; }
+            </style>
+            <div class="vibe-cv-pdf-wrap" id="vibe-cv-pdf-content">
+               <div class="cv-container">
+                  <header>
+                    <h1>${p.name || ''}</h1>
+                    <div class="meta">${metaLine1}</div>
+                    <div class="meta">${metaLine2}</div>
+                  </header>
+          `;
 
-            // Assign to input
-            const dt = new DataTransfer();
-            dt.items.add(file);
-            targetInput.files = dt.files;
-            
-            // Dispatch events so React/Vue/Angular on the page notice the change
-            targetInput.dispatchEvent(new Event('change', { bubbles: true }));
-            targetInput.dispatchEvent(new Event('input', { bubbles: true }));
-
-            closeFn();
-          } else {
-            card.innerHTML = `<div style="color: red; font-size: 12px;">Error: ${response?.error || 'Unknown error'}</div>`;
-            card.style.pointerEvents = 'auto';
+          if (cv.summary) {
+             const sumArr = Array.isArray(cv.summary) ? cv.summary : [cv.summary];
+             html += `<section class="section"><h2>Summary</h2>`;
+             sumArr.filter(Boolean).forEach(s => html += `<p style="margin-bottom:8px;">${s}</p>`);
+             html += `</section>`;
           }
-        });
+
+          if (cv.skills && cv.skills.length) {
+             html += `<section class="section"><h2>Skills</h2><div class="keywords">`;
+             cv.skills.forEach(s => html += `<span>${s}</span>`);
+             html += `</div></section>`;
+          }
+
+          if (cv.experience && cv.experience.length) {
+             html += `<section class="section"><h2>Experience</h2>`;
+             cv.experience.forEach(exp => {
+                const header = [exp.role, exp.company, exp.location, [exp.start, exp.end].filter(Boolean).join(" – ")].filter(Boolean).join(" · ");
+                html += `<div class="exp-item"><div class="exp-header">${header}</div><ul>`;
+                (exp.bullets || []).forEach(b => html += `<li>${b}</li>`);
+                html += `</ul></div>`;
+             });
+             html += `</section>`;
+          }
+
+          if (cv.education && cv.education.length) {
+             html += `<section class="section"><h2>Education</h2>`;
+             cv.education.forEach(edu => {
+                const header = [edu.degree, edu.institution, [edu.start, edu.end].filter(Boolean).join(" – ")].filter(Boolean).join(" · ");
+                html += `<div style="margin-bottom:6px;">${header}</div>`;
+             });
+             html += `</section>`;
+          }
+          
+          html += `</div></div>`;
+          container.innerHTML = html;
+          document.body.appendChild(container);
+
+          const element = document.getElementById('vibe-cv-pdf-content');
+          const cleanCompany = company.replace(/[^a-zA-Z0-9]/g, '_') || 'Company';
+          
+          const opt = {
+            margin:       0,
+            filename:     `CV_${cleanCompany}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, logging: false },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+          };
+
+          html2pdf().from(element).set(opt).output('blob').then((blob) => {
+              const file = new File([blob], opt.filename, {type: "application/pdf"});
+              const dt = new DataTransfer();
+              dt.items.add(file);
+              targetInput.files = dt.files;
+              targetInput.dispatchEvent(new Event('change', { bubbles: true }));
+              targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+              
+              document.body.removeChild(container);
+              closeFn();
+          }).catch(err => {
+              card.innerHTML = `<div style="color: red; font-size: 12px;">Error: ${err.message}</div>`;
+              card.style.pointerEvents = 'auto';
+              if(document.body.contains(container)) document.body.removeChild(container);
+          });
+        } catch (err) {
+            card.innerHTML = `<div style="color: red; font-size: 12px;">Setup Error: ${err.message}</div>`;
+            card.style.pointerEvents = 'auto';
+        }
       };
       
       listContainer.appendChild(card);

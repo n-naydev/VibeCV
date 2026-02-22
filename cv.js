@@ -1,4 +1,9 @@
 // cv.js
+window.addEventListener('error', (event) => {
+  if (chrome && chrome.runtime && chrome.runtime.sendMessage) {
+    chrome.runtime.sendMessage({ type: 'PDF_GENERATION_ERROR', error: 'cv.js Error: ' + event.message });
+  }
+});
 
 // --- Helper Functions ---
 
@@ -222,6 +227,9 @@ function setupSkills(containerId, skillsData) {
 function renderCV(cvData) {
   if (!cvData) {
     console.error("No cvData found");
+    if (chrome && chrome.runtime && chrome.runtime.sendMessage) {
+      chrome.runtime.sendMessage({ type: 'PDF_GENERATION_ERROR', error: 'No cvData found' });
+    }
     return;
   }
 
@@ -293,16 +301,32 @@ const cvId = urlParams.get('id');
 
 if (cvId) {
   chrome.storage.local.get({ cvHistory: [] }, (res) => {
-    const historyItem = res.cvHistory.find(item => item.id === cvId);
-    if (historyItem) {
-      renderCV(historyItem.cvData);
-    } else {
-      console.error("CV not found in history");
+    try {
+      const historyItem = res.cvHistory.find(item => item.id === cvId);
+      if (historyItem) {
+        renderCV(historyItem.cvData);
+      } else {
+        const err = "CV not found in history for ID: " + cvId;
+        console.error(err);
+        if (chrome && chrome.runtime && chrome.runtime.sendMessage) {
+          chrome.runtime.sendMessage({ type: 'PDF_GENERATION_ERROR', error: err });
+        }
+      }
+    } catch (e) {
+      if (chrome && chrome.runtime && chrome.runtime.sendMessage) {
+        chrome.runtime.sendMessage({ type: 'PDF_GENERATION_ERROR', error: 'Error during renderCV: ' + e.message });
+      }
     }
   });
 } else {
   chrome.storage.local.get("cvData", ({ cvData }) => {
-    renderCV(cvData);
+    try {
+      renderCV(cvData);
+    } catch(e) {
+      if (chrome && chrome.runtime && chrome.runtime.sendMessage) {
+        chrome.runtime.sendMessage({ type: 'PDF_GENERATION_ERROR', error: 'Error during fallback renderCV: ' + e.message });
+      }
+    }
   });
 }
 

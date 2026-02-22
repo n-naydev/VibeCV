@@ -3,11 +3,11 @@
   "name": "VibeCV",
   "version": "1.0",
   "description": "Tailors your CV for a specific job.",
-  "permissions": ["scripting", "activeTab", "storage", "offscreen"],
+  "permissions": ["scripting", "activeTab", "storage"],
   "options_page": "options.html",
   "web_accessible_resources": [
     {
-      "resources": ["icons/*"],
+      "resources": ["icons/*", "libs/*"],
       "matches": ["<all_urls>"]
     }
   ],
@@ -31,7 +31,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["common.js", "contentScript.js", "Readability.js"]
+      "js": ["libs/html2pdf.bundle.min.js", "common.js", "contentScript.js", "Readability.js"]
     }
   ]
 }
