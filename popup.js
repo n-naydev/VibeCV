@@ -1,4 +1,5 @@
 const tailorBtn = document.getElementById("tailor-cv");
+const viewHistoryBtn = document.getElementById("view-history");
 const openOptionsBtn = document.getElementById("open-options");
 const openOptionsLink = document.getElementById("open-options-link");
 const stageStatusEl = document.getElementById("stage-status");
@@ -10,6 +11,12 @@ const stageStatusEl = document.getElementById("stage-status");
     });
   }
 });
+
+if (viewHistoryBtn) {
+  viewHistoryBtn.addEventListener("click", () => {
+    chrome.tabs.create({ url: chrome.runtime.getURL("history.html") });
+  });
+}
 
 chrome.runtime.onMessage.addListener((message) => {
   if (message.type === "TAILOR_CV_SCRAPING_DONE") {

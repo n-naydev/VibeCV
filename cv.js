@@ -219,9 +219,9 @@ function setupSkills(containerId, skillsData) {
 
 // --- Main Execution ---
 
-chrome.storage.local.get("cvData", ({ cvData }) => {
+function renderCV(cvData) {
   if (!cvData) {
-    console.error("No cvData found in storage");
+    console.error("No cvData found");
     return;
   }
 
@@ -284,7 +284,25 @@ chrome.storage.local.get("cvData", ({ cvData }) => {
       end: "YYYY",
     })
   );
-});
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+const cvId = urlParams.get('id');
+
+if (cvId) {
+  chrome.storage.local.get({ cvHistory: [] }, (res) => {
+    const historyItem = res.cvHistory.find(item => item.id === cvId);
+    if (historyItem) {
+      renderCV(historyItem.cvData);
+    } else {
+      console.error("CV not found in history");
+    }
+  });
+} else {
+  chrome.storage.local.get("cvData", ({ cvData }) => {
+    renderCV(cvData);
+  });
+}
 
 // Print Button
 document.getElementById("btn-print")?.addEventListener("click", () => {

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Saved CVs</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        background: #0f172a;
+        color: #e5e7eb;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      h1 {
+        color: #f9fafb;
+        margin-top: 0;
+      }
+      .cv-card {
+        background: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .cv-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .cv-title {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #f8fafc;
+      }
+      .cv-company {
+        color: #94a3b8;
+      }
+      .cv-meta {
+        font-size: 0.8rem;
+        color: #64748b;
+      }
+      .cv-meta a {
+        color: #3b82f6;
+        text-decoration: none;
+      }
+      .cv-meta a:hover {
+        text-decoration: underline;
+      }
+      .btn {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 8px 16px;
+        cursor: pointer;
+        font-weight: 500;
+        text-decoration: none;
+      }
+      .btn:hover {
+        background: #2563eb;
+      }
+      .btn-danger {
+        background: #ef4444;
+      }
+      .btn-danger:hover {
+        background: #dc2626;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+      .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #94a3b8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Saved CVs</h1>
+      <div id="history-list"></div>
+    </div>
+    <script src="history.js"></script>
+  </body>
+</html>
