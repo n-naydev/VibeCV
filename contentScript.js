@@ -216,11 +216,10 @@ function showVibeCvModal(targetInput) {
           document.body.appendChild(container);
 
           const element = document.getElementById('vibe-cv-pdf-content');
-          const cleanCompany = company.replace(/[^a-zA-Z0-9]/g, '_') || 'Company';
           
           const opt = {
             margin:       [20, 20], // top/bottom, left/right margins (20mm)
-            filename:     `CV_${cleanCompany}.pdf`,
+            filename:     'CV.pdf',
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true, logging: false },
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
