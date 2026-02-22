@@ -25,7 +25,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const title = document.createElement('div');
         title.className = 'cv-title';
-        title.textContent = item.jobTitle || 'Unknown Title';
+        
+        const titleText = document.createElement('span');
+        titleText.textContent = item.jobTitle || 'Unknown Title';
+
+        const editTitleBtn = document.createElement('span');
+        editTitleBtn.innerHTML = ' ✎';
+        editTitleBtn.style.cssText = 'cursor:pointer; opacity: 0.6; font-size: 0.8em; margin-left: 6px; font-weight: normal;';
+        editTitleBtn.title = "Edit Job Title";
+        editTitleBtn.onmouseover = () => editTitleBtn.style.opacity = '1';
+        editTitleBtn.onmouseout = () => editTitleBtn.style.opacity = '0.6';
+
+        editTitleBtn.onclick = () => {
+          const newTitle = prompt("Edit Job Title:", item.jobTitle || 'Unknown Title');
+          if (newTitle !== null && newTitle.trim() !== "") {
+            const trueIndex = res.cvHistory.findIndex(h => h.id === item.id);
+            if(trueIndex !== -1) {
+              res.cvHistory[trueIndex].jobTitle = newTitle.trim();
+              chrome.storage.local.set({ cvHistory: res.cvHistory }, () => {
+                renderHistory();
+              });
+            }
+          }
+        };
+
+        title.append(titleText, editTitleBtn);
 
         const company = document.createElement('div');
         company.className = 'cv-company';
