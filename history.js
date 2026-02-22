@@ -29,7 +29,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const company = document.createElement('div');
         company.className = 'cv-company';
-        company.textContent = item.company || 'Unknown Company';
+        
+        const companyText = document.createElement('span');
+        companyText.textContent = item.company || 'Unknown Company';
+        
+        const editCompanyBtn = document.createElement('span');
+        editCompanyBtn.innerHTML = ' ✎';
+        editCompanyBtn.style.cssText = 'cursor:pointer; opacity: 0.6; font-size: 0.9em; margin-left: 4px;';
+        editCompanyBtn.title = "Edit Company Name";
+        editCompanyBtn.onmouseover = () => editCompanyBtn.style.opacity = '1';
+        editCompanyBtn.onmouseout = () => editCompanyBtn.style.opacity = '0.6';
+        
+        editCompanyBtn.onclick = () => {
+          const newCompany = prompt("Edit Company Name:", item.company || 'Unknown Company');
+          if (newCompany !== null && newCompany.trim() !== "") {
+            const trueIndex = res.cvHistory.findIndex(h => h.id === item.id);
+            if(trueIndex !== -1) {
+              res.cvHistory[trueIndex].company = newCompany.trim();
+              chrome.storage.local.set({ cvHistory: res.cvHistory }, () => {
+                renderHistory(); // Re-render to show updated name
+              });
+            }
+          }
+        };
+
+        company.append(companyText, editCompanyBtn);
 
         const meta = document.createElement('div');
         meta.className = 'cv-meta';
